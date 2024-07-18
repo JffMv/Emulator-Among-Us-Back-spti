@@ -1,5 +1,6 @@
 package co.edu.ing.escuela.backamongus.EndPoint;
 
+import java.io.Console;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,8 @@ public class AmongEndPoint {
     public void processPoint(String message, Session session) {
         try {
             PlayerAction action = objectMapper.readValue(message, PlayerAction.class);
-            String sessionId = action.getId();
+            String sessionId = session.getId();
+
 
             PlayerState state = playerStates.getOrDefault(sessionId, new PlayerState(sessionId));
 
@@ -77,20 +79,6 @@ public class AmongEndPoint {
         queue.add(session);
         ownSession = session;
         logger.log(Level.INFO, "Connection opened.");
-        try {
-            session.getBasicRemote().sendText("Connection established.");
-            System.out.println("New connection established with session ID: " + session.getId());
-
-            // Inicializar el estado del nuevo jugador
-            PlayerState newPlayerState = new PlayerState(session.getId());
-            playerStates.put(session.getId(), newPlayerState);
-
-            // Enviar el estado actual a todos los jugadores
-            String updatedStateMessage = objectMapper.writeValueAsString(playerStates);
-            this.send(updatedStateMessage);
-        } catch (IOException ex) {
-            logger.log(Level.SEVERE, null, ex);
-        }
     }
 
     @OnClose
@@ -163,6 +151,7 @@ public class AmongEndPoint {
         @Setter
         @Getter
         private Boolean moveEnd;
+
 
         // Constructor por defecto necesario para Jackson
         public PlayerAction() {}
