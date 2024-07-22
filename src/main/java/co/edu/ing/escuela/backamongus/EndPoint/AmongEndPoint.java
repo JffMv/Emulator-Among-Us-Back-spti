@@ -8,6 +8,9 @@ import java.util.logging.Level;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+
+import co.edu.ing.escuela.backamongus.classes.MatchAmongUs;
+import co.edu.ing.escuela.backamongus.classes.Player;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -27,6 +30,7 @@ public class AmongEndPoint {
 
     static Queue<Session> queue = new ConcurrentLinkedQueue<>();
     static Map<String, PlayerState> playerStates = new HashMap<>();
+    private MatchAmongUs match = new MatchAmongUs();
     Session ownSession = null;
 
     public void send(String msg) {
@@ -48,6 +52,11 @@ public class AmongEndPoint {
         try {
             PlayerAction action = objectMapper.readValue(message, PlayerAction.class);
             String sessionId = session.getId();
+
+
+            if (!this.match.existThisPlayer(action.getId())){
+                this.match.addPlayers(action.getId(), new Player(action.getName(), action.getId(), sessionId));
+            }
 
 
             PlayerState state = playerStates.getOrDefault(sessionId, new PlayerState(sessionId));
