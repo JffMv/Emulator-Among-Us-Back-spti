@@ -21,6 +21,12 @@ public class MatchAmongUs {
     public boolean existThisPlayer(String idPlayer){
         return this.players.containsKey(idPlayer);
     }
+    public boolean availableTaskPlayer(String idPlayer, String idTask){
+        return this.players.get(idPlayer).stateOfTask(Integer.parseInt(idTask));
+    }
+    public void modifiedTask(String idPlayer, String idTask){
+        this.players.get(idPlayer).updateTaks(Integer.parseInt(idTask));
+    }
 
 
 }

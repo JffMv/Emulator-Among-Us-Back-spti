@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import co.edu.ing.escuela.backamongus.classes.MatchAmongUs;
 import co.edu.ing.escuela.backamongus.classes.Player;
+import co.edu.ing.escuela.backamongus.classes.TaskResponse;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -58,6 +59,19 @@ public class AmongEndPoint {
                 this.match.addPlayers(action.getId(), new Player(action.getName(), action.getId(), sessionId));
             }
 
+            if (action.getType() != null && action.getType().equals("CHECK_TASK") && action.getGroup() != null) {
+                // Lógica para comprobar si hay una tarea disponible
+                boolean taskAvailable = checkTaskAvailability(action.getGroup(), action.getId());
+                TaskResponse taskResponse = new TaskResponse("TASK_AVAILABLE", taskAvailable, action.getId());
+                String taskResponseMessage = objectMapper.writeValueAsString(taskResponse);
+                session.getBasicRemote().sendText(taskResponseMessage);
+                return;
+            }
+
+            if(action.getType() != null && action.getType().equals("UPDATE_TASK")&& action.getGroup() != null){
+                this.match.modifiedTask(action.getId(), action.getGroup());
+                return;
+            }
 
             PlayerState state = playerStates.getOrDefault(sessionId, new PlayerState(sessionId));
 
@@ -81,6 +95,10 @@ public class AmongEndPoint {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to process point", e);
         }
+    }
+
+    private boolean checkTaskAvailability(String group, String id) {
+        return this.match.availableTaskPlayer(id, group);
     }
 
     @OnOpen
@@ -160,6 +178,12 @@ public class AmongEndPoint {
         @Setter
         @Getter
         private Boolean moveEnd;
+        @Setter @Getter
+        private String type;
+        @Setter @Getter
+        private String group;
+        @Setter @Getter
+        private Boolean taskCompleted;
 
 
         // Constructor por defecto necesario para Jackson

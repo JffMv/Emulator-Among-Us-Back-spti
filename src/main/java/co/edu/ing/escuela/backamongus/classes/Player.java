@@ -22,6 +22,9 @@ public class Player {
     @Setter
     @Getter
     private String idSession;
+    @Setter
+    @Getter
+    private Boolean isAlive;
 
     public Player(String name, String idPlayer, String idSession) {
         this.name = name;
@@ -34,5 +37,11 @@ public class Player {
         for(int i = 0; i<11;i++){
             tasks.put(i, false);
         }
+    }
+    public boolean stateOfTask(Integer idTask){
+        return this.tasks.get(idTask);
+    }
+    public void updateTaks(Integer key){
+        this.tasks.put(key, true);
     }
 }
