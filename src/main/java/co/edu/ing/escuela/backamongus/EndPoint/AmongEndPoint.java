@@ -62,7 +62,7 @@ public class AmongEndPoint {
             if (action.getType() != null && action.getType().equals("CHECK_TASK") && action.getGroup() != null) {
                 // Lógica para comprobar si hay una tarea disponible
                 boolean taskAvailable = checkTaskAvailability(action.getGroup(), action.getId());
-                TaskResponse taskResponse = new TaskResponse("TASK_AVAILABLE", taskAvailable, action.getId());
+                TaskResponse taskResponse = new TaskResponse("TASK_AVAILABLE", taskAvailable, action.getId(),action.getGroup());
                 String taskResponseMessage = objectMapper.writeValueAsString(taskResponse);
                 session.getBasicRemote().sendText(taskResponseMessage);
                 return;

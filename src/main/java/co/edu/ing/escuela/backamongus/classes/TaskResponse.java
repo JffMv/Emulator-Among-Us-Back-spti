@@ -11,10 +11,13 @@ public class TaskResponse {
     private boolean available;
     @Getter @Setter
     private String playerId;
+    @Getter @Setter
+    private String numberGroup;
 
-    public TaskResponse(String type, boolean available, String playerId) {
+    public TaskResponse(String type, boolean available, String playerId, String numberGroup) {
         this.type = type;
         this.available = available;
         this.playerId = playerId;
+        this.numberGroup=numberGroup;
     }
 }
