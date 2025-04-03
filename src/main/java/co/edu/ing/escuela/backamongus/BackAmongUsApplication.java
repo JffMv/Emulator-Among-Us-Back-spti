@@ -4,7 +4,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import java.util.Collections;
 
@@ -25,6 +24,8 @@ public class BackAmongUsApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-
+        // This method is executed after the application context is loaded
+        // You can add any initialization logic here if needed
+        System.out.println("BackAmongUsApplication started successfully!");
     }
 }

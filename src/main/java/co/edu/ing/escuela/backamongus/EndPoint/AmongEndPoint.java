@@ -50,12 +50,11 @@ public class AmongEndPoint {
     public void send(String msg) {
         try {
             for (Session session : queue) {
-                //if (!session.equals(this.ownSession)) {
-                    session.getBasicRemote().sendText(msg);
-                //}
+
+                session.getBasicRemote().sendText(msg);
                 logger.log(Level.INFO, "Sent: {0}", msg);
             }
-            System.out.println("Sent to all players: " + msg);
+            logger.log("Sent to all players: " + msg);
         } catch (IOException e) {
             logger.log(Level.INFO, e.toString());
         }
@@ -106,7 +105,7 @@ public class AmongEndPoint {
             this.send(updatedStateMessage);
 
             logger.log(Level.INFO, "Point received: {0}. From session: {1}", new Object[]{message, session});
-            System.out.println("Received from player: " + message);
+            logger.log("Received from player: " + message);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to process point", e);
         }
@@ -129,7 +128,7 @@ public class AmongEndPoint {
         playerStates.remove(session.getId());
         playerService.deletePlayerSession(session.getId());
         logger.log(Level.INFO, "Connection closed.");
-        System.out.println("Connection closed with session ID: " + session.getId());
+        logger.log("Connection closed with session ID: " + session.getId());
 
         try {
             // Notificar a los demás jugadores que este jugador se ha desconectado
@@ -145,9 +144,14 @@ public class AmongEndPoint {
         queue.remove(session);
         playerStates.remove(session.getId());
         playerService.deletePlayerSession(session.getId());
-        logger.log(Level.INFO, t.toString());
-        logger.log(Level.INFO, "Connection error.");
-        System.out.println("Error in connection with session ID: " + session.getId() + ". Error: " + t.getMessage());
+        
+        if (logger.isLoggable(Level.INFO)) {
+            logger.log(Level.INFO, t.toString());
+            logger.log(Level.INFO, "Connection error.");
+        }
+        
+        logger.log("Error in connection with session ID: " 
+                + session.getId() + ". Error: " + t.getMessage());
     }
 
     private static class PlayerState {

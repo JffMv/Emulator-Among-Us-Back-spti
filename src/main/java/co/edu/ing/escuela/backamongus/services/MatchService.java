@@ -17,11 +17,13 @@ import java.util.List;
 @Service
 public class MatchService {
 
-    @Autowired
-    @Qualifier("matchesMongoTemplate")
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-    // Crear una nueva partida
+    public MatchService(@Qualifier("matchesMongoTemplate") MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+
     public MatchAmongUs createMatch(MatchAmongUs match) {
         return mongoTemplate.save(match);
     }
