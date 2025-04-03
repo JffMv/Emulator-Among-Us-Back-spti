@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import co.edu.ing.escuela.backamongus.classes.MatchAmongUs;
 import co.edu.ing.escuela.backamongus.classes.Player;
 import co.edu.ing.escuela.backamongus.classes.TaskResponse;
+import co.edu.ing.escuela.backamongus.services.PlayerService;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnError;
 import jakarta.websocket.OnMessage;
@@ -19,13 +20,17 @@ import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-@ServerEndpoint("/play")
+@ServerEndpoint(value = "/play", configurator = CustomConfigurator.class)
 public class AmongEndPoint {
+
+    private PlayerService playerService;
     private static final Logger logger = Logger.getLogger(AmongEndPoint.class.getName());
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -33,13 +38,21 @@ public class AmongEndPoint {
     static Map<String, PlayerState> playerStates = new HashMap<>();
     private MatchAmongUs match = new MatchAmongUs();
     Session ownSession = null;
+    public AmongEndPoint(){
+
+    }
+
+    @Autowired
+    public AmongEndPoint(PlayerService playerService){
+        this.playerService = playerService;
+    }
 
     public void send(String msg) {
         try {
             for (Session session : queue) {
-                if (!session.equals(this.ownSession)) {
+                //if (!session.equals(this.ownSession)) {
                     session.getBasicRemote().sendText(msg);
-                }
+                //}
                 logger.log(Level.INFO, "Sent: {0}", msg);
             }
             System.out.println("Sent to all players: " + msg);
@@ -56,7 +69,9 @@ public class AmongEndPoint {
 
 
             if (!this.match.existThisPlayer(action.getId())){
-                this.match.addPlayers(action.getId(), new Player(action.getName(), action.getId(), sessionId));
+                Player playerTemp =  new Player(action.getName(), action.getId(), sessionId);
+                this.match.addPlayers(action.getId(),playerTemp);
+                this.playerService.createPlayer(playerTemp);
             }
 
             if (action.getType() != null && action.getType().equals("CHECK_TASK") && action.getGroup() != null) {
@@ -112,6 +127,7 @@ public class AmongEndPoint {
     public void closedConnection(Session session) {
         queue.remove(session);
         playerStates.remove(session.getId());
+        playerService.deletePlayerSession(session.getId());
         logger.log(Level.INFO, "Connection closed.");
         System.out.println("Connection closed with session ID: " + session.getId());
 
@@ -128,6 +144,7 @@ public class AmongEndPoint {
     public void error(Session session, Throwable t) {
         queue.remove(session);
         playerStates.remove(session.getId());
+        playerService.deletePlayerSession(session.getId());
         logger.log(Level.INFO, t.toString());
         logger.log(Level.INFO, "Connection error.");
         System.out.println("Error in connection with session ID: " + session.getId() + ". Error: " + t.getMessage());

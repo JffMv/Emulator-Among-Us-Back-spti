@@ -1,15 +1,20 @@
 package co.edu.ing.escuela.backamongus.classes;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.HashMap;
 
-@NoArgsConstructor
+
 @AllArgsConstructor
+@Document("PlayersAmongUs")
 public class Player {
     @Setter
     @Getter
     private String name;
+
+    @Id
     @Setter
     @Getter
     private String idPlayer;
@@ -25,6 +30,9 @@ public class Player {
     @Setter
     @Getter
     private Boolean isAlive;
+    public  Player(){
+        this.generateTask();
+    }
 
     public Player(String name, String idPlayer, String idSession) {
         this.name = name;
@@ -34,12 +42,16 @@ public class Player {
     }
 
     private void generateTask(){
-        for(int i = 0; i<11;i++){
+        for(int i = 1; i<12;i++){
             tasks.put(i, false);
         }
     }
-    public boolean stateOfTask(Integer idTask){
-        return this.tasks.get(idTask);
+    public boolean stateOfTask(Integer taskId) {
+        Boolean taskStatus = tasks.get(taskId);
+        if (taskStatus == null) {
+            throw new IllegalArgumentException("Task ID not found");
+        }
+        return taskStatus;
     }
     public void updateTaks(Integer key){
         this.tasks.put(key, true);
