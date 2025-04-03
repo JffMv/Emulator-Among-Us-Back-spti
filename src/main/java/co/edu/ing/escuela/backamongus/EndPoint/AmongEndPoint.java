@@ -208,7 +208,7 @@ public class AmongEndPoint {
 
 
         /**
-         * Construtor necesario
+         * Construtor necesario para la implementación
          */
         public PlayerAction() {}
 
