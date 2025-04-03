@@ -69,7 +69,7 @@ public class PlayerService {
 
 
     public Boolean getTaskStatus(String idPlayer, Integer taskKey) {
-        Query query = new Query(Criteria.where("idPlayer").is(idPlayer));
+        Query query = new Query(Criteria.where("ID_PLAYER").is(idPlayer));
         Player player = mongoTemplate.findOne(query, Player.class);
         
         if (player == null) {

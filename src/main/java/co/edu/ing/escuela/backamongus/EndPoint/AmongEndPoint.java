@@ -207,7 +207,9 @@ public class AmongEndPoint {
         private Boolean taskCompleted;
 
 
-        // Constructor por defecto necesario para Jackson
+        /**
+         * Construtor necesario
+         */
         public PlayerAction() {}
 
 
